@@ -1,0 +1,25 @@
+#[build]
+
+[env]
+CC_aarch64-linux-android="/Users/osobiehl/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android30-clang"
+AR_aarch64-linux-android="/Users/osobiehl/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android-ar"
+
+#[target.aarch64-linux-android]
+#ar = "/home/osobiehl/Documents/android_rust/NDK/arm64/bin/aarch64-linux-android-ar"
+#linker = "/home/osobiehl/Documents/android_rust/NDK/arm64/bin/aarch64-linux-android-clang"
+#rustflags = "-Clink-arg=-Wl,-soname=libnative.so.0 "
+
+#[target.armv7-linux-androideabi]
+#ar = "/home/osobiehl/Documents/android_rust/NDK/arm/bin/arm-linux-androideabi-ar"
+#linker = "/home/osobiehl/Documents/android_rust/NDK/arm/bin/arm-linux-androideabi-clang"
+#rustflags = "-Clink-arg=-Wl,-soname=libnative.so.0 "
+#
+#[target.i686-linux-android]
+#ar = "/home/osobiehl/Documents/android_rust/NDK/x86/bin/i686-linux-android-ar"
+#linker = "/home/osobiehl/Documents/android_rust/NDK/x86/bin/i686-linux-android-clang"
+#rustflags = "-Clink-arg=-Wl,-soname=libnative.so.0 "
+#
+#[target.x86_64-linux-android]
+#ar = "/home/osobiehl/Documents/android_rust/NDK/x86/bin/x86_64-linux-android26-ar"
+#linker = "/home/osobiehl/Documents/android_rust/NDK/x86/bin/x86_64-linux-android26-clang"
+#rustflags = "-Clink-arg=-Wl,-soname=libnative.so.0 "

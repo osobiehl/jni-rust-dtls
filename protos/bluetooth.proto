@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package com.google.bluetooth;
+message BluetoothData { bytes data = 1; }
+message Null {}
+
+service BluetoothApi {
+  rpc SendToBt(BluetoothData) returns (Null);
+  rpc ReceiveFromBt(Null) returns (BluetoothData);
+}
