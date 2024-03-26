@@ -92,6 +92,9 @@ impl Greeter for MyGreeter {
 
 once the native lib is built, start up your ANDROID emulator and run main.dart. You should see a "hello from Rust" in the app console!
 
+# Limitations
+
+Since the example runs as a separate thread, hot reloading does not currently work. You need to stop the program and restart it to avoid errors binding to the udp port
 
 A few resources to get you started if this is your first Flutter project:
 
