@@ -19,8 +19,6 @@ typedef device_lib_start = ffi.Void Function();
 
 void init(){
 var libraryPath = path.join(Directory.current.path, 'lib', 'libnative.so');
-print(libraryPath);
-print(Directory.current.path) ;
 if (Platform.isMacOS) { 
   libraryPath = path.join(Directory.current.path, 'libnative.dylib');
 } else if (Platform.isWindows) { 
@@ -37,8 +35,6 @@ final DeviceLibInit hello = dylib
 
 
 Future<void> main(List<String> args) async {
-    // Initialize logging
-  print("hello");
 
   final log = Logger('ExampleLogger');
   Logger.root.level = Level.ALL; // defaults to Level.INFO
@@ -47,8 +43,6 @@ Future<void> main(List<String> args) async {
   });
 
   init();
-  print("after init");
-  await Future.delayed(Duration(seconds: 100));
     final channel = ClientChannel(
     '127.0.0.1',
     port: 50051,
@@ -58,16 +52,13 @@ Future<void> main(List<String> args) async {
           CodecRegistry(codecs: const [GzipCodec(), IdentityCodec()]),
     ),
   );
-  print("made channel");
 
   final stub = GreeterClient(channel);
-  print("made stub");
 
 
   final name = args.isNotEmpty ? args[0] : 'world';
 
   try {
-   print("before sayhello");
     var response = await stub.sayHello(HelloRequest()..name = name);
     print('Greeter client received: ${response.message}');
     response = await stub.sayHelloAgain(HelloRequest()..name = name);

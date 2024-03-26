@@ -14,30 +14,24 @@ use {android_logger::Config, log::Level};
 
 #[allow(clippy::missing_safety_doc)]
 #[no_mangle]
-pub unsafe extern "C" fn initialize_ffi() {
+pub fn initialize_logging() {
     #[cfg(target_os = "android")]
     {
         android_logger::init_once(Config::default().with_min_level(Level::Debug));
     }
-    debug!("Native FFI Bridge receiver initialized.");
+    debug!("logging initialized");
 }
 
 pub mod greeter {
     tonic::include_proto!("com.google.greeting");
 }
 
-pub mod bluetooth {
-    tonic::include_proto!("com.google.bluetooth");
-}
-
-use bluetooth::bluetooth_api_server::{BluetoothApi, BluetoothApiServer};
-
 use greeter::{
     greeter_server::{Greeter, GreeterServer},
     HelloRequest, HelloResponse,
 };
 
-use tokio::{runtime::Runtime, sync::Mutex};
+use tokio::runtime::Runtime;
 use tonic::{transport::Server, Request, Response, Status};
 
 #[derive(Debug, Default)]
@@ -78,22 +72,15 @@ impl Greeter for MyGreeter {
 
 #[no_mangle]
 pub extern "C" fn device_lib_start() {
-    unsafe { initialize_ffi() };
+    initialize_logging();
     thread::spawn(move || {
-        debug!("walla therad");
+        debug!("spawning thread");
 
-        let Ok(mut rt) = Runtime::new() else {
+        let Ok(rt) = Runtime::new() else {
             debug!("could not spawn tokio runtime");
             return;
         };
-        let a = rt.spawn(device_lib_main());
-        let b = rt.spawn(async {
-            loop {
-                debug!("hello from tokio");
-                tokio::time::sleep(tokio::time::Duration::from_secs(1)).await;
-            }
-        });
-        let _ = rt.block_on(async move { tokio::join!(a, b) });
+        let _device_lib = rt.block_on(device_lib_main());
     });
 }
 
@@ -101,9 +88,7 @@ use std::default::Default;
 use tracing::{span, Level as TraceLevel};
 
 use crate::dtls_default::get_client;
-async fn device_lib_main() {
-    debug!("parsing addr");
-    let addr = "127.0.0.1:50051".parse().expect("not an address");
+async fn do_dtls_request_through_localhost() {
     //dtls_default::client_get().await;
     let domain = format!("10.0.2.2:{}", 7777);
     let mut client = get_client().await;
@@ -123,6 +108,10 @@ async fn device_lib_main() {
     );
     //let greeter = MyGreeter::new(get_client().await);
     debug!("starting greeter");
+}
+
+async fn device_lib_main() {
+    let addr = "127.0.0.1:50051".parse().expect("not an address");
     Server::builder()
         .trace_fn(|arg| {
             debug!("recv: {:?}", arg);
