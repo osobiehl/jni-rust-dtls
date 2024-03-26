@@ -41,6 +41,53 @@ lrwxr-xr-x  1 osobiehl  staff  74 Mar 22 19:51 libnative.so -> ../../../../../..
 
 ```
 
+
+# Adding protobuf code
+to add protobuf code, first add your `.proto` file in `protos`
+then, modify `native/build.rs` to compile the new proto file
+```rust
+tonic_build::compile_protos("../protos/your_proto.proto")?;
+```
+
+then, in your rust code, add the following
+```rust
+pub mod greeter {
+    tonic::include_proto!("you_proto_name");
+}
+```
+note that if you gave your proto file a package name, it will have that name instead
+
+afterwards, declare a struct and implement the methods on the struct
+```rust
+#[derive(Debug, Default)]
+pub struct MyGreeter {
+}
+
+#[tonic::async_trait]
+impl Greeter for MyGreeter {
+    async fn say_hello(
+        &self,
+        request: Request<HelloRequest>, // Accept request of type HelloRequest
+    ) -> Result<Response<HelloResponse>, Status> {
+        // Return an instance of type HelloResponse
+        debug!("Got a request: {:?}", request);
+
+        let reply = HelloResponse {
+            message: format!("Hello {}!", request.into_inner().name), // We must use .into_inner() as the fields of gRPC requests and responses are private
+        };
+
+        Ok(Response::new(reply)) // Send back our formatted greeting
+    }
+    async fn say_hello_again(
+        &self,
+        request: Request<HelloRequest>, // Accept request of type HelloRequest
+    ) -> Result<Response<HelloResponse>, Status> {
+        debug!("hello again");
+        self.say_hello(request).await
+    }
+}
+```
+
 # Running the example
 
 once the native lib is built, start up your ANDROID emulator and run main.dart. You should see a "hello from Rust" in the app console!
